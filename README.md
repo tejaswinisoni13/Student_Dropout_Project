@@ -1,153 +1,160 @@
-# EduInsight - AI-Powered Student Performance & Dropout Risk Analysis
+# EduInsight – AI-Powered Student Performance & Dropout Risk Analysis
 
-<p align="center">
-  <img src="assets/banner.png" alt="EduInsight Banner" width="100%">
-</p>
-
-<p align="center">
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?style=for-the-badge&logo=streamlit)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-orange?style=for-the-badge&logo=scikitlearn)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-150458?style=for-the-badge&logo=pandas)
-![Plotly](https://img.shields.io/badge/Plotly-Interactive%20Charts-3F4F75?style=for-the-badge&logo=plotly)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-
-</p>
-
-<p align="center">
-
-An AI-powered Learning Analytics Dashboard that helps faculty identify student performance patterns, cluster students into learning groups, and analyze dropout risk using Machine Learning.
-
-</p>
-
----
-
-# Project Overview
-
-EduInsight is a faculty-oriented analytics platform developed to transform educational data into actionable insights.
-
-The system analyzes student academic records, attendance, quizzes, classroom engagement, and forum activities to identify learning patterns using multiple clustering algorithms.
-
-Unlike traditional dashboards, EduInsight automatically compares different clustering techniques and provides meaningful visual analytics to support academic decision-making.
-
----
-
-# Features
-
-- Interactive Streamlit Dashboard
-- CSV Upload Support
-- Student Performance Analysis
-- Dropout Risk Analysis
-- K-Means Clustering
-- Gaussian Mixture Model (GMM)
-- Hierarchical Clustering
-- Algorithm Comparison
-- PCA Visualization
-- Course Outcome Analysis
-- Learning Outcome Analysis
-- Performance Trends
-- Interactive Charts
-- Download Processed Results
-
----
-
-# Dashboard Preview
-
-## Home
-
-<p align="center">
-<img src="screenshots/home.png" width="90%">
-</p>
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?style=flat-square&logo=streamlit)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-orange?style=flat-square&logo=scikitlearn)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-150458?style=flat-square&logo=pandas)
+![Plotly](https://img.shields.io/badge/Plotly-Visualization-3F4F75?style=flat-square&logo=plotly)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
 
 ## Overview
 
-<p align="center">
-<img src="screenshots/overview.png" width="90%">
-</p>
+EduInsight is an AI-powered Learning Analytics Dashboard developed to help educational institutions analyze student performance and identify students who may be at risk of dropping out.
+
+The system applies multiple unsupervised machine learning algorithms to group students based on academic performance, attendance, assessment scores, and engagement. Faculty members can upload a dataset through an interactive Streamlit interface and receive meaningful insights supported by visual analytics.
 
 ---
 
-## Performance Analysis
+## Key Features
 
-<p align="center">
-<img src="screenshots/performance.png" width="90%">
-</p>
-
----
-
-## Cluster Analysis
-
-<p align="center">
-<img src="screenshots/clustering.png" width="90%">
-</p>
-
----
-
-## Course Outcomes
-
-<p align="center">
-<img src="screenshots/course_outcomes.png" width="90%">
-</p>
+- Interactive Streamlit dashboard
+- CSV dataset upload
+- Automated data preprocessing
+- Missing value handling
+- Feature scaling
+- Student clustering using multiple algorithms
+- Dropout risk categorization
+- Interactive performance visualizations
+- Learning and Course Outcome analysis
+- Algorithm comparison using clustering metrics
+- Download processed results
 
 ---
 
-# Live Demo
+## Dashboard Modules
 
-<p align="center">
+### Home
+- Upload student dataset
+- Configure clustering algorithm
+- Select number of clusters
+- Filter students based on risk level
 
-<img src="screenshots/demo.gif" width="95%">
+### Overview
+- Student summary
+- Cluster distribution
+- Performance statistics
+- Attendance overview
+- Risk distribution
 
-</p>
+### Learning Curve
+- Quiz performance trend
+- Pass vs dropout analysis
+- Student progress visualization
 
-> Replace `demo.gif` with a short recording (20–30 seconds) of the application.
+### Performance Analysis
+- Grade distribution
+- Attendance analysis
+- Feature comparison
+- Academic performance metrics
+
+### Cluster Analysis
+- K-Means clustering
+- Gaussian Mixture Model (GMM)
+- Hierarchical clustering
+- PCA visualization
+- Dendrogram
+- Algorithm comparison
+
+### Course Outcomes
+- Course Outcome attainment
+- Learning Outcome mapping
+- Academic performance summary
 
 ---
 
-# Machine Learning Workflow
+## Machine Learning Workflow
 
 ```text
-                   Student Dataset (CSV)
-                            │
-                            ▼
-                  Data Preprocessing
-      ┌─────────────────────────────────┐
-      │ Missing Value Handling          │
-      │ Feature Scaling                 │
-      │ Data Cleaning                   │
-      └─────────────────────────────────┘
-                            │
-                            ▼
-               Feature Engineering
-                            │
-                            ▼
-               Unsupervised Learning
-      ┌────────────┬────────────┬────────────┐
-      │            │            │            │
-      ▼            ▼            ▼
-   K-Means       GMM      Hierarchical
-      │            │            │
-      └────────────┴────────────┘
-                    │
-                    ▼
-          Cluster Label Generation
-                    │
-                    ▼
-          Student Risk Categorization
-                    │
-                    ▼
-         Interactive Analytics Dashboard
+Student Dataset
+       │
+       ▼
+Data Preprocessing
+       │
+       ├── Missing Value Handling
+       ├── Feature Scaling
+       └── Data Cleaning
+       │
+       ▼
+Feature Engineering
+       │
+       ▼
+Machine Learning
+       │
+       ├── K-Means
+       ├── Gaussian Mixture Model
+       └── Hierarchical Clustering
+       │
+       ▼
+Cluster Label Generation
+       │
+       ▼
+Student Risk Classification
+       │
+       ▼
+Interactive Dashboard
 ```
 
 ---
 
-# Technologies Used
+## Algorithms Used
+
+| Algorithm | Purpose |
+|------------|----------|
+| K-Means | Student segmentation |
+| Gaussian Mixture Model | Probabilistic clustering |
+| Hierarchical Clustering | Relationship discovery |
+| PCA | Dimensionality reduction |
+| StandardScaler | Feature normalization |
+| SimpleImputer | Missing value handling |
+
+---
+
+## Evaluation Metrics
+
+The clustering models are evaluated using:
+
+- Silhouette Score
+- Davies-Bouldin Index
+
+These metrics are used to compare clustering quality and identify the most suitable algorithm for the uploaded dataset.
+
+---
+
+## Dataset Features
+
+The dashboard supports features such as:
+
+- 10th Percentage
+- 12th Percentage
+- CGPA
+- Average Marks
+- Attendance
+- Quiz Attempts
+- Prior Knowledge
+- Resource Usage
+- Forum Replies
+- Forum Views
+- Student Engagement
+
+---
+
+## Technology Stack
 
 | Category | Technologies |
-|-----------|--------------|
-| Language | Python |
+|----------|--------------|
+| Programming Language | Python |
 | Dashboard | Streamlit |
 | Machine Learning | Scikit-Learn |
 | Data Processing | Pandas, NumPy |
@@ -156,9 +163,9 @@ Unlike traditional dashboards, EduInsight automatically compares different clust
 
 ---
 
-# Project Structure
+## Project Structure
 
-```
+```text
 EduInsight/
 │
 ├── app.py
@@ -167,109 +174,26 @@ EduInsight/
 ├── README.md
 │
 ├── dataset/
-│      sample_dataset.csv
-│
-├── screenshots/
-│      home.png
-│      overview.png
-│      clustering.png
-│      performance.png
-│      course_outcomes.png
-│      demo.gif
+│   └── sample_dataset.csv
 │
 ├── models/
-│      classifier.pkl
-│      kmeans.pkl
-│      gmm.pkl
 │
 ├── docs/
-│      Project_Report.pdf
-│      Architecture.png
 │
 └── assets/
-       banner.png
 ```
 
 ---
 
-# Dataset Features
-
-The model considers multiple academic and engagement features including:
-
-- 10th Percentage
-- 12th Percentage
-- CGPA
-- Average Marks
-- Attendance
-- Quiz Performance
-- Prior Knowledge
-- Resource Usage
-- Forum Activity
-- Student Engagement
-
----
-
-# Machine Learning Algorithms
-
-| Algorithm | Purpose |
-|------------|----------|
-| K-Means | Student Segmentation |
-| Gaussian Mixture Model | Probabilistic Clustering |
-| Hierarchical Clustering | Relationship Discovery |
-| PCA | Visualization |
-| StandardScaler | Feature Scaling |
-| SimpleImputer | Missing Value Handling |
-
----
-
-# Dashboard Modules
-
-### Home
-
-- Upload dataset
-- Configure analysis
-- Faculty overview
-
-### Overview
-
-- Student statistics
-- Risk distribution
-- Performance summary
-
-### Learning Curve
-
-- Quiz progression
-- Pass vs Dropout analysis
-
-### Performance
-
-- Grade distribution
-- Academic performance
-- Boxplot analysis
-
-### Cluster Analysis
-
-- PCA Visualization
-- Algorithm comparison
-- Cluster quality metrics
-- Dendrogram
-
-### Course Outcomes
-
-- CO attainment
-- Learning outcome analysis
-
----
-
-# Installation
+## Installation
 
 Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/EduInsight.git
+git clone <repository-url>
 ```
 
-Go inside the project
+Move to the project directory
 
 ```bash
 cd EduInsight
@@ -281,7 +205,7 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
-Run the dashboard
+Run the application
 
 ```bash
 streamlit run app.py
@@ -289,56 +213,32 @@ streamlit run app.py
 
 ---
 
-# Future Improvements
+## Project Highlights
 
-- Deep Learning based Prediction
-- Real-Time Student Analytics
-- Faculty Login
-- Student Login
-- Report Generation (PDF)
-- Email Alerts
-- Cloud Deployment
-- Database Integration
-- Role-Based Access
+- Faculty-oriented analytics dashboard
+- Interactive and user-friendly interface
+- Multiple clustering algorithms in a single application
+- Comparative clustering analysis
+- PCA-based visualization
+- Course Outcome and Learning Outcome analysis
+- Downloadable processed results
+- Modular architecture for future enhancements
+
+---
+
+## Future Enhancements
+
+- Supervised dropout prediction model
 - Explainable AI (XAI)
+- Student and faculty authentication
+- Database integration
+- PDF report generation
+- Cloud deployment
+- Real-time analytics
+- Role-based access control
 
 ---
 
-# Results
-
-The project successfully compares three clustering algorithms using:
-
-- Silhouette Score
-- Davies-Bouldin Index
-
-The dashboard automatically identifies the best-performing clustering model for the uploaded dataset.
-
----
-
-# Author
-
-**Tejaswini Soni**
-
-B.Tech Information Technology
-
-SGSITS Indore
-
-Machine Learning | Data Science | Full Stack Development
-
-GitHub:
-https://github.com/YOUR_USERNAME
-
-LinkedIn:
-https://linkedin.com/in/YOUR_LINKEDIN
-
----
-
-# License
+## License
 
 This project is licensed under the MIT License.
-
----
-
-## Support
-
-If you found this project useful, consider giving it a ⭐ on GitHub.
