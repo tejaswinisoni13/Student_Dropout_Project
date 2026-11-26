@@ -46,15 +46,15 @@ warnings.filterwarnings("ignore")
 PRODUCT_NAME = "EduLens"
 PRODUCT_TAG = "Student Performance & Dropout Analytics"
 
-NAVY, NAVY2, MUTED = "#1E2A44", "#33415C", "#6B7280"
-SAGE, SAGE_D, AMBER, TERRA = "#8BA888", "#5B7B63", "#D4A24C", "#B9574B"
-LINE = "#E6E0D0"
+NAVY, NAVY2, NAVY_D, MUTED = "#23364D", "#33415C", "#18283B", "#6B7280"
+SAGE, SAGE_D, AMBER, TERRA = "#829783", "#829783", "#C8A24E", "#B65A4B"
+LINE = "#E5E5DF"
 
 TIERS = ["High-Performing", "Moderate", "At-Risk"]
-TIER_COLORS = {"High-Performing": "#6E9275", "Moderate": AMBER, "At-Risk": TERRA}
+TIER_COLORS = {"High-Performing": SAGE, "Moderate": AMBER, "At-Risk": TERRA}
 GRADES = ["O", "A", "B", "F"]
-GRADE_COLORS = {"O": "#4F6F57", "A": SAGE, "B": AMBER, "F": TERRA, "Unknown": "#A8A29A"}
-HEAT = [[0, "#FAF7F0"], [0.5, "#A9C2AE"], [1, "#3F6050"]]
+GRADE_COLORS = {"O": NAVY, "A": SAGE, "B": AMBER, "F": TERRA, "Unknown": "#A8A29A"}
+HEAT = [[0, "#F7F6F0"], [0.5, "#B9C7B9"], [1, "#23364D"]]
 GRADE_RULE = "O: score 75 or above · A: 60 to under 75 · B: 50 to under 60 · F: under 50"
 
 MIN_RECORDS = 4          # K-Means with K = 3 needs more than 3 students
@@ -64,9 +64,8 @@ RECORD_RULE = (
     f"{N_CLUSTERS}); {RECOMMENDED_RECORDS} or more recommended for stable groups."
 )
 
-# (tab label, one-line purpose shown in the sidebar guide)
+# Analysis pages shown as the horizontal navigation bar (upload lives in the sidebar).
 PAGES = [
-    ("Upload Dataset", "Add your class dataset and run the analysis."),
     ("Data Validation", "File checks, preview and processing details."),
     ("Class Overview", "Quick summary of the class."),
     ("Performance", "Grades, scores and engagement indicators."),
@@ -78,6 +77,7 @@ PAGES = [
     ("Export Reports", "Download results as CSV."),
 ]
 PAGE_NAMES = [p for p, _ in PAGES]
+DEFAULT_PAGE = PAGE_NAMES[0]
 
 # Role-based permissions (enforced in the router and on the Export page).
 # Both roles see every analysis page; they differ in which files they may download.
@@ -146,99 +146,114 @@ CONSIDERATIONS = {
 CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
-:root{--navy:#1E2A44;--navy2:#33415C;--ivory:#FAF7F0;--card:#FFFDF8;--line:#E6E0D0;--sage:#8BA888;--sage-d:#5B7B63;--sage-l:#E6EEE4;--muted:#6B7280;--amber:#D4A24C;--terra:#B9574B;}
-.stApp, .stApp p, .stApp label, .stApp input, .stApp textarea, .stApp button, .stApp li, .stApp td, .stApp th{font-family:Inter,"Segoe UI",system-ui,sans-serif;}
-.stApp{background:var(--ivory);color:var(--navy);}
-.ph-title,.brand-name,.login-title,.login-form-title,.kpi-value{font-family:"Source Serif 4",Georgia,serif;}
-#MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"]{display:none !important;}
-header[data-testid="stHeader"]{background:transparent;height:2.2rem;}
-.main .block-container,[data-testid="stMainBlockContainer"]{max-width:1400px;padding:2.4rem 1.8rem 1.2rem;}
-[data-testid="stVerticalBlock"]{gap:.6rem;}
-[data-testid="stSidebar"]{background:#F3EFE3;border-right:1px solid var(--line);}
-[data-testid="stSidebarContent"],[data-testid="stSidebar"] .block-container{padding-top:.8rem;}
-[data-testid="stSidebar"] [data-testid="stVerticalBlock"]{gap:.45rem;}
-.stApp label p,[data-testid="stWidgetLabel"] p{font-size:.78rem;font-weight:600;color:var(--navy2);}
-[data-testid="stWidgetLabel"]{margin-bottom:.1rem;}
+:root{--navy:#23364D;--navy-d:#18283B;--ivory:#F7F6F0;--card:#FFFFFF;--line:#E5E5DF;--sage:#829783;--sage-l:#E8EEE7;--text:#293444;--muted:#6B7280;--amber:#C8A24E;--terra:#B65A4B;}
+html,body,.stApp,[data-testid="stAppViewContainer"]{background:var(--ivory);}
+.stApp,.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp button,.stApp li,.stApp td,.stApp th{font-family:Inter,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+.stApp{color:var(--text);line-height:1.55;}
+.ph-title,.brand-name,.login-title,.login-form-title,.kpi-value{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;}
+#MainMenu,footer,[data-testid="stToolbar"],[data-testid="stDecoration"]{display:none !important;}
+header[data-testid="stHeader"]{background:transparent;height:2.5rem;}
+.main .block-container,[data-testid="stMainBlockContainer"]{max-width:1400px;padding:3.2rem 1.5rem 2rem;}
+[data-testid="stVerticalBlock"]{gap:.75rem;}
+.stApp label p,[data-testid="stWidgetLabel"] p{font-size:.84rem;font-weight:600;color:var(--text);line-height:1.4;}
+[data-testid="stWidgetLabel"]{margin-bottom:.15rem;}
+[data-testid="stCaptionContainer"],[data-testid="stCaptionContainer"] p{font-size:.82rem;line-height:1.55;color:#566070 !important;opacity:1 !important;}
+[data-baseweb="tag"]{max-width:100% !important;}
+[data-baseweb="tag"] span{font-size:.8rem;}
+[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{line-height:1.6;}
+/* Streamlit gives markdown blocks a -1rem bottom margin that makes custom HTML blocks overlap the next element; neutralise it */
+[data-testid="stMarkdownContainer"]{margin-bottom:0 !important;}
+[data-testid="stMarkdownContainer"] > *:last-child{margin-bottom:0 !important;}
 
 /* page header */
-.ph{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin:0 0 .2rem;}
-.ph-title{font-size:1.45rem;font-weight:700;color:var(--navy);letter-spacing:-.01em;line-height:1.2;}
-.ph-sub{font-size:.82rem;color:var(--muted);margin-top:.1rem;}
-.ph-meta{font-size:.72rem;color:var(--muted);text-align:right;white-space:nowrap;}
+.ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:.3rem 1.5rem;margin:.1rem 0 0;}
+.ph-title{font-size:1.6rem;font-weight:700;color:var(--navy);line-height:1.25;}
+.ph-sub{font-size:.9rem;color:var(--muted);margin-top:.15rem;line-height:1.5;}
+.ph-meta{font-size:.78rem;color:var(--muted);text-align:right;line-height:1.4;}
 
-/* horizontal tab navigation (a styled radio group so tabs can be switched programmatically) */
-.st-key-nav [role="radiogroup"]{flex-wrap:nowrap;gap:0;overflow-x:auto;border-bottom:1px solid var(--line);}
-.st-key-nav label{margin:0;padding:.5rem .85rem;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;}
-.st-key-nav label > div:not([data-testid="stMarkdownContainer"]){display:none;}
-.st-key-nav label p{font-size:.8rem;font-weight:600;color:var(--muted);margin:0;}
-.st-key-nav label:hover p{color:var(--navy);}
-.st-key-nav label:has(input:checked){border-bottom-color:var(--sage-d);}
-.st-key-nav label:has(input:checked) p{color:var(--navy);}
+/* top navigation bar: one native button per page; wraps onto a second row on narrow screens so no page is ever hidden */
+.st-key-navbar{border-bottom:1px solid var(--line);padding-bottom:.55rem;}
+.st-key-navbar [data-testid="stHorizontalBlock"]{flex-wrap:wrap !important;gap:.4rem .35rem !important;}
+.st-key-navbar [data-testid="stColumn"],.st-key-navbar [data-testid="column"]{flex:0 0 auto !important;width:auto !important;min-width:0 !important;}
+.st-key-navbar button{white-space:nowrap;min-height:2.2rem;padding:.3rem .7rem;font-weight:600;border-radius:8px;}
+.st-key-navbar button p{font-size:.82rem;white-space:nowrap;}
+.st-key-navbar button[kind="secondary"],.st-key-navbar [data-testid="stBaseButton-secondary"]{background:var(--card);border:1px solid var(--line);color:var(--text);}
+.st-key-navbar button[kind="secondary"]:hover,.st-key-navbar [data-testid="stBaseButton-secondary"]:hover{background:var(--sage-l);border-color:var(--sage);color:var(--navy);}
+.st-key-navbar button[kind="primary"],.st-key-navbar [data-testid="stBaseButton-primary"]{background:var(--navy);border:1px solid var(--navy);color:#fff;}
+.st-key-navbar button[kind="primary"] p,.st-key-navbar [data-testid="stBaseButton-primary"] p{color:#fff;}
 
 /* KPI cards */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.55rem;}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;position:relative;overflow:hidden;}
-.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--sage-d));}
-.kpi-label{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
-.kpi-value{font-size:1.3rem;font-weight:700;color:var(--navy);line-height:1.15;margin-top:.1rem;overflow-wrap:anywhere;}
-.kpi-sub{font-size:.68rem;color:var(--muted);margin-top:.05rem;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.7rem;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.7rem .9rem;position:relative;overflow:hidden;}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--sage));}
+.kpi-label{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);line-height:1.3;}
+.kpi-value{font-size:1.5rem;font-weight:700;color:var(--navy);line-height:1.2;margin-top:.2rem;overflow-wrap:anywhere;}
+.kpi-sub{font-size:.76rem;color:var(--muted);margin-top:.15rem;line-height:1.4;}
 
 /* callouts and cards */
-.callout{border-radius:9px;padding:.5rem .8rem;font-size:.8rem;line-height:1.5;border:1px solid;}
-.callout ul{margin:.2rem 0 0 1rem;padding:0;}
-.callout.info,.callout.ok{background:var(--sage-l);border-color:#C5D6C3;color:#2F4A37;}
-.callout.warn{background:#F8F0DD;border-color:#E8D9A8;color:#6B4E12;}
-.callout.err{background:#F6E4E1;border-color:#E2B8B1;color:#7A2F26;}
-.callout.note{background:#F1EDE1;border-color:var(--line);color:#3F4A5E;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;}
-.card h4{margin:0 0 .2rem;color:var(--navy);font-size:.85rem;font-weight:700;}
-.card p,.card li{color:#4A5568;font-size:.78rem;line-height:1.5;margin:0;}
-.card ul{margin:.2rem 0 0 1rem;padding:0;}
-.section-title{color:var(--navy);font-size:.9rem;font-weight:700;margin:.2rem 0 0;}
-.empty{color:var(--muted);text-align:center;padding:1.4rem .5rem;font-size:.82rem;background:var(--card);border:1px solid var(--line);border-radius:10px;}
-.badge{display:inline-block;border-radius:999px;padding:.1rem .55rem;font-size:.68rem;font-weight:700;}
-.b-ok{background:var(--sage-l);color:#2F4A37;}.b-bad{background:#F6E4E1;color:#7A2F26;}
+.callout{border-radius:8px;padding:.7rem .95rem;font-size:.88rem;line-height:1.6;border:1px solid;}
+.callout ul{margin:.3rem 0 0 1.1rem;padding:0;}
+.callout.info,.callout.ok{background:var(--sage-l);border-color:#CBD7CA;color:#2F4A37;}
+.callout.warn{background:#F8F1DC;border-color:#E8D9A8;color:#6B4E12;}
+.callout.err{background:#F7E6E3;border-color:#E3BBB4;color:#7A2F26;}
+.callout.note{background:#EFEFE8;border-color:var(--line);color:#3F4A5E;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.8rem 1rem;}
+.card h4{margin:0 0 .3rem;color:var(--navy);font-size:.95rem;font-weight:700;line-height:1.35;}
+.card p,.card li{color:#4A5568;font-size:.86rem;line-height:1.6;margin:0;}
+.card ul{margin:.3rem 0 0 1.1rem;padding:0;}
+.section-title{color:var(--navy);font-size:1rem;font-weight:700;margin:.3rem 0 0;line-height:1.4;}
+.empty{color:var(--muted);text-align:center;padding:1.6rem .8rem;font-size:.88rem;background:var(--card);border:1px solid var(--line);border-radius:8px;}
+.badge{display:inline-block;border-radius:999px;padding:.15rem .7rem;font-size:.74rem;font-weight:700;}
+.b-ok{background:var(--sage-l);color:#2F4A37;}.b-bad{background:#F7E6E3;color:#7A2F26;}
 
 /* sidebar */
-.brand{display:flex;align-items:center;gap:.6rem;}
-.brand-logo{width:32px;height:32px;border-radius:8px;background:var(--navy);color:var(--ivory);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;font-family:"Source Serif 4",Georgia,serif;}
-.brand-name{font-weight:700;font-size:1.05rem;color:var(--navy);line-height:1.1;}
-.brand-tag{font-size:.62rem;color:var(--muted);line-height:1.25;}
-.side-card{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:.45rem .65rem;}
-.side-label{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
-.side-value{font-size:.8rem;font-weight:600;color:var(--navy);margin-top:.05rem;word-break:break-word;}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.35rem;}
-.g-row{padding:.22rem .5rem;border-radius:7px;border-left:2px solid transparent;}
-.g-row b{display:block;font-size:.74rem;color:var(--navy);}
-.g-row span{display:block;font-size:.64rem;color:var(--muted);line-height:1.25;}
-.g-row.cur{background:var(--sage-l);border-left-color:var(--sage-d);}
+[data-testid="stSidebar"]{background:var(--card);border-right:1px solid var(--line);}
+[data-testid="stSidebarUserContent"]{padding:1rem 1.1rem 1.2rem !important;}
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"]{gap:.8rem;}
+.brand{display:flex;align-items:center;gap:.75rem;padding:.2rem 0 1rem;border-bottom:1px solid var(--line);}
+.brand-logo{flex:0 0 40px;width:40px;height:40px;border-radius:9px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;font-family:"Source Serif 4",Georgia,serif;}
+.brand-text{min-width:0;}
+.brand-name{font-weight:700;font-size:1.2rem;color:var(--navy);line-height:1.2;}
+.brand-tag{font-size:.74rem;color:var(--muted);line-height:1.35;margin-top:.1rem;}
+.side-card{background:var(--ivory);border:1px solid var(--line);border-radius:8px;padding:.65rem .85rem;}
+.side-label{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.3;}
+.side-value{font-size:.95rem;font-weight:600;color:var(--navy);margin-top:.1rem;line-height:1.35;overflow-wrap:anywhere;}
+.side-sub{font-size:.8rem;color:var(--muted);line-height:1.4;}
+.status{font-size:.84rem;line-height:1.5;border-radius:8px;padding:.55rem .75rem;border:1px solid var(--line);background:var(--ivory);color:var(--text);overflow-wrap:anywhere;}
+.status.ok{background:var(--sage-l);border-color:#CBD7CA;color:#2F4A37;}
+.status.warn{background:#F8F1DC;border-color:#E8D9A8;color:#6B4E12;}
+.status.err{background:#F7E6E3;border-color:#E3BBB4;color:#7A2F26;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:.45rem;}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]{padding:.8rem;border-radius:8px;}
+[data-testid="stSidebar"] .stButton > button{min-height:2.4rem;}
 
 /* login */
-.login-hero{background:var(--navy);border-radius:16px;padding:2rem 1.8rem;min-height:430px;}
-.login-hero .brand-name{color:#FAF7F0 !important;font-size:1.25rem;}
-.login-hero .brand-logo{background:var(--sage-d);}
-.login-hero .brand-tag{color:#B8C0CF !important;font-size:.7rem;}
-.login-title{color:#FAF7F0 !important;font-size:1.7rem;font-weight:700;line-height:1.25;margin:2rem 0 .6rem;}
-.login-desc{color:#D5DAE3 !important;font-size:.9rem;line-height:1.6;}
-.login-point{color:#E8EBF1 !important;font-size:.84rem;margin-top:.8rem;padding-left:.8rem;border-left:3px solid var(--sage);line-height:1.45;}
-.login-form-title{color:var(--navy);font-size:1.4rem;font-weight:700;margin-top:1.4rem;}
-.login-form-sub{color:var(--muted);font-size:.84rem;margin:.2rem 0 .6rem;}
+.login-hero{background:var(--navy-d);border-radius:12px;padding:2.2rem 2rem;min-height:440px;}
+.login-hero .brand{border-bottom:0;padding-bottom:0;}
+.login-hero .brand-name{color:#F7F6F0 !important;font-size:1.3rem;}
+.login-hero .brand-logo{background:var(--sage);}
+.login-hero .brand-tag{color:#B8C0CF !important;}
+.login-title{color:#F7F6F0 !important;font-size:1.75rem;font-weight:700;line-height:1.3;margin:2.2rem 0 .8rem;}
+.login-desc{color:#D5DAE3 !important;font-size:.95rem;line-height:1.65;}
+.login-point{color:#E8EBF1 !important;font-size:.9rem;margin-top:.9rem;padding-left:.9rem;border-left:3px solid var(--sage);line-height:1.5;}
+.login-form-title{color:var(--navy);font-size:1.5rem;font-weight:700;margin-top:1.4rem;line-height:1.3;}
+.login-form-sub{color:var(--muted);font-size:.9rem;margin:.25rem 0 .7rem;line-height:1.5;}
 
 /* controls */
 .stButton > button,.stDownloadButton > button,[data-testid="stFormSubmitButton"] > button{border-radius:8px;font-weight:600;border:1px solid var(--line);}
-.stButton > button[kind="primary"],.stDownloadButton > button[kind="primary"],[data-testid="stFormSubmitButton"] > button[kind="primary"]{background:var(--sage-d);border-color:var(--sage-d);color:#fff;}
-.stButton > button[kind="primary"]:hover,[data-testid="stFormSubmitButton"] > button[kind="primary"]:hover{background:#4A6851;border-color:#4A6851;color:#fff;}
+.stButton > button[kind="primary"],.stDownloadButton > button[kind="primary"],[data-testid="stFormSubmitButton"] > button[kind="primary"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+.stButton > button[kind="primary"]:hover,[data-testid="stFormSubmitButton"] > button[kind="primary"]:hover{background:var(--navy-d);border-color:var(--navy-d);color:#fff;}
 .stTabs [data-baseweb="tab-list"]{gap:2px;border-bottom:1px solid var(--line);}
-.stTabs [data-baseweb="tab"]{padding:.35rem .75rem;font-size:.82rem;color:var(--muted);}
+.stTabs [data-baseweb="tab"]{padding:.45rem .85rem;color:var(--muted);}
+.stTabs [data-baseweb="tab"] p{font-size:.88rem;}
 .stTabs [aria-selected="true"]{color:var(--navy) !important;}
-.stTabs [data-baseweb="tab-highlight"]{background:var(--sage-d);}
-[data-testid="stFileUploaderDropzone"]{background:var(--card);border:2px dashed var(--sage);border-radius:12px;padding:1.2rem;}
-[data-testid="stPlotlyChart"]{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:2px 4px;}
+.stTabs [data-baseweb="tab-highlight"]{background:var(--navy);}
+[data-testid="stFileUploaderDropzone"]{background:var(--card);border:1.5px dashed var(--sage);border-radius:8px;}
+[data-testid="stPlotlyChart"]{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:2px 4px;}
 [data-testid="stDataFrame"]{border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-[data-testid="stExpander"]{background:var(--card);border:1px solid var(--line);border-radius:10px;}
-[data-testid="stExpander"] summary{padding:.35rem .8rem;}
-[data-testid="stExpander"] summary p{font-size:.82rem;font-weight:600;}
-.stCaption,[data-testid="stCaptionContainer"]{font-size:.72rem;}
+[data-testid="stExpander"]{background:var(--card);border:1px solid var(--line);border-radius:8px;}
+[data-testid="stExpander"] summary{padding:.5rem .9rem;}
+[data-testid="stExpander"] summary p{font-size:.9rem;font-weight:600;}
 </style>
 """
 
@@ -297,8 +312,8 @@ def pct(a, b):
 
 
 def request_nav(page):
-    """Ask for a tab switch on the next run (safe to call from buttons and callbacks)."""
-    st.session_state["_goto"] = page
+    """Switch page. Works from callbacks and from normal script flow (no widget owns this key)."""
+    st.session_state["page"] = page
 
 
 def safe_df(df):
@@ -325,17 +340,17 @@ def fit_h(rows, cap=300):
 def style_fig(fig, h=290, title=None, legend=False):
     fig.update_layout(
         template="plotly_white", height=h, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif", size=11, color="#4A5568"),
-        margin=dict(t=40 if title else 14, b=56 if legend else 34, l=44, r=14),
+        font=dict(family="Inter, Segoe UI, Arial, sans-serif", size=12, color="#4A5568"),
+        margin=dict(t=46 if title else 16, b=100 if legend else 38, l=48, r=16),
         hoverlabel=dict(bgcolor="white", font_size=12, bordercolor=LINE),
         showlegend=legend,
     )
     if legend:
-        fig.update_layout(legend=dict(orientation="h", y=-0.22, x=0, title_text="", font=dict(size=10)))
+        fig.update_layout(legend=dict(orientation="h", yanchor="top", y=-0.34, x=0, title_text="", font=dict(size=11)))
     if title:
-        fig.update_layout(title=dict(text=title, x=0, xanchor="left", font=dict(size=13, color=NAVY)))
-    fig.update_xaxes(gridcolor="#EFEADD", zeroline=False, linecolor=LINE)
-    fig.update_yaxes(gridcolor="#EFEADD", zeroline=False, linecolor=LINE)
+        fig.update_layout(title=dict(text=title, x=0, xanchor="left", font=dict(size=14, color=NAVY)))
+    fig.update_xaxes(gridcolor="#EDEDE6", zeroline=False, linecolor=LINE)
+    fig.update_yaxes(gridcolor="#EDEDE6", zeroline=False, linecolor=LINE)
     return fig
 
 
@@ -392,7 +407,7 @@ def validate_upload(raw):
     if kind is None:
         v["errors"].append(
             "The columns do not match a supported dataset. The pipeline needs at least 3 recognised columns "
-            "from one schema (see the supported datasets on the Upload Dataset tab).")
+            "from one schema (see 'Supported datasets' in the sidebar).")
         return v
     if v["n"] < MIN_RECORDS:
         v["errors"].append(f"Only {v['n']} records found. {RECORD_RULE}")
@@ -671,7 +686,7 @@ def login_page():
         for k in ("login_fails", "lock_until"):
             st.session_state.pop(k, None)
         st.session_state.update(authenticated=True, username=user.strip().lower(), user=acct["name"], role=role,
-                                nav=PAGE_NAMES[0], _flash=f"Signed in as {acct['name']} ({role}).")
+                                page=DEFAULT_PAGE)
         st.rerun()
 
 
@@ -679,7 +694,8 @@ def login_page():
 # Session state, shell
 # ----------------------------------------------------------------------------
 def init_state():
-    for k, v in {"authenticated": False, "upload": None, "analysis": None}.items():
+    for k, v in {"authenticated": False, "upload": None, "analysis": None, "page": DEFAULT_PAGE,
+                 "file_sig": None, "run_status": None}.items():
         st.session_state.setdefault(k, v)
 
 
@@ -701,103 +717,114 @@ def can_export(kind):
     return kind in ROLES.get(st.session_state.get("role"), {}).get("exports", set())
 
 
+def current_status():
+    """(css class, message) describing the dataset: none / uploaded / running result / done / invalid / failed."""
+    A, up, rs = get_analysis(), st.session_state.get("upload"), st.session_state.get("run_status")
+    if A is not None:
+        return "ok", f"Analysis complete: {A['n']} students from {A['name']}."
+    if rs:
+        return rs
+    if up is not None and up.get("error"):
+        return "err", f"Invalid dataset: {up['error']}"
+    if up is not None and up.get("val") and up["val"]["errors"]:
+        return "err", "Invalid dataset: " + up["val"]["errors"][0]
+    if st.session_state.get("file_sig"):
+        return "warn", "Dataset uploaded but not analysed. Press Run Analysis."
+    return "", "No dataset uploaded."
+
+
+def no_data_message():
+    kind, msg = current_status()
+    callout({"ok": "ok", "warn": "warn", "err": "err"}.get(kind, "note"),
+            f"<b>{esc(msg)}</b> Use the sidebar to upload a CSV and press Run Analysis; every number on the "
+            "analysis pages is computed from your data.")
+
+
 def require_data(title, sub):
     A = get_analysis()
     page_header(title, sub, A)
     if A is None:
-        callout("note", "<b>No analysed dataset yet.</b> Upload a CSV and press Run Analysis; every number on this "
-                        "page is computed from your data.")
-        st.button("Go to Upload Dataset", type="primary", on_click=request_nav, args=(PAGE_NAMES[0],),
-                  key=f"need_{title}")
+        no_data_message()
         return None
     return A
 
 
-def sidebar():
-    A, up = get_analysis(), st.session_state.get("upload")
-    cur = st.session_state.get("nav")
-    with st.sidebar:
-        st.markdown(
-            f'<div class="brand"><div class="brand-logo">EL</div><div><div class="brand-name">{PRODUCT_NAME}</div>'
-            f'<div class="brand-tag">{PRODUCT_TAG}</div></div></div>', unsafe_allow_html=True)
-        if A:
-            status, color = f"{A['name']} · {A['n']} students analysed", "#5B7B63"
-        elif up:
-            status, color = f"{up['name']} · not analysed", AMBER
-        else:
-            status, color = "No dataset uploaded", "#A8A29A"
-        st.markdown(
-            f'<div class="side-card"><div class="side-label">Welcome</div>'
-            f'<div class="side-value">{esc(st.session_state.get("user", ""))}</div>'
-            f'<div class="kpi-sub">{esc(st.session_state.get("role", ""))}</div></div>'
-            f'<div class="side-card"><div class="side-label">Dataset</div><div class="side-value">'
-            f'<span class="dot" style="background:{color}"></span>{esc(status)}</div></div>',
-            unsafe_allow_html=True)
-        if st.button("Log out", key="logout_btn", use_container_width=True):
-            logout()
-            st.rerun()
-        st.markdown('<div class="side-label" style="margin:.4rem 0 0 .2rem">Guide to the tabs</div>',
-                    unsafe_allow_html=True)
-        rows = "".join(
-            f'<div class="g-row{" cur" if p == cur else ""}"><b>{esc(p)}</b><span>{esc(d)}</span></div>'
-            for p, d in PAGES if p in allowed_pages())
-        st.markdown(rows, unsafe_allow_html=True)
-
-
-# ----------------------------------------------------------------------------
-# Page: Upload Dataset (uploader, short note, Run Analysis - nothing else)
-# ----------------------------------------------------------------------------
-def page_upload():
-    page_header("Upload Dataset", "Add a CSV of student records, then press Run Analysis.")
-    f = st.file_uploader("Drag and drop a CSV file here, or browse", type=["csv"], key="uploader")
-    c1, c2 = st.columns(2)
-    with c1:
-        card("A. Academic Records (MTech)",
-             "<p>Needs at least 3 of these columns (numbers only): " +
-             ", ".join(esc(c) for c in MTECH_FEATURE_COLS) +
-             ".</p><p style='margin-top:.3rem'>Optional: Student ID or Roll Number; QUIZ 1 to QUIZ 6 "
-             "(numbers). Blank or non-numeric cells are treated as missing.</p>")
-    with c2:
-        card("B. Classroom Engagement (xAPI)",
-             "<p>Needs at least 3 of these columns: raisedhands, VisITedResources, AnnouncementsView, Discussion "
-             "(numbers); StudentAbsenceDays (Under-7 or Above-7); ParentAnsweringSurvey (No or Yes); "
-             "ParentschoolSatisfaction (Bad or Good).</p><p style='margin-top:.3rem'>Optional: Class (H, M or L), "
-             "Topic, Semester, GradeID, SectionID.</p>")
-    st.caption(f"Column names must match exactly (extra spaces are trimmed). {RECORD_RULE}")
-    if st.button("Run Analysis", type="primary", key="run_analysis"):
-        run_analysis_clicked(f)
-
-
-def run_analysis_clicked(f):
-    if f is None:
-        st.error("Please upload a CSV file first.")
-        return
-    data = f.getvalue()
+def run_analysis(f):
+    """Validate the uploaded file, run the unchanged backend, keep results in session state."""
     st.session_state["analysis"] = None            # a new run invalidates earlier results
-    raw, err = read_csv_bytes(data)
+    st.session_state["run_status"] = None
+    if f is None:
+        st.session_state["run_status"] = ("err", "Please upload a CSV file first.")
+        return
+    raw, err = read_csv_bytes(f.getvalue())
     if err:
         st.session_state["upload"] = {"name": f.name, "raw": None, "error": err, "val": None}
-        st.error(f"Could not read {f.name}. {err}")
+        st.session_state["run_status"] = ("err", f"Invalid dataset: could not read {f.name}. {err}")
         return
     raw = raw.reset_index(drop=True)
     val = validate_upload(raw)
     st.session_state["upload"] = {"name": f.name, "raw": raw, "error": None, "val": val}
     if val["errors"]:
-        st.error("This dataset cannot be analysed: " + " ".join(val["errors"]))
-        st.caption("The full report is on the Data Validation tab.")
+        st.session_state["run_status"] = ("err", "Invalid dataset: " + " ".join(val["errors"]) +
+                                          " Details are on Data Validation.")
         return
     bar = st.progress(0, text="Starting...")
     try:
         A = build_analysis(f.name, raw, progress=lambda p, t: bar.progress(p, text=t))
     except Exception as exc:
         bar.empty()
-        st.error(f"Analysis failed: {exc}")
-        st.caption("Check the Data Validation tab for columns with missing or invalid values.")
+        st.session_state["run_status"] = ("err", f"Analysis failed: {exc}")
         return
     st.session_state["analysis"] = A
-    st.session_state["_flash"] = f"Analysis complete for {A['n']} students. Review the data checks below."
-    request_nav("Data Validation")
+    st.session_state["page"] = DEFAULT_PAGE
     st.rerun()
+
+
+def sidebar():
+    with st.sidebar:
+        st.markdown(
+            f'<div class="brand"><div class="brand-logo">EL</div><div class="brand-text">'
+            f'<div class="brand-name">{PRODUCT_NAME}</div><div class="brand-tag">{PRODUCT_TAG}</div></div></div>',
+            unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="side-card"><div class="side-label">Welcome</div>'
+            f'<div class="side-value">{esc(st.session_state.get("user", ""))}</div>'
+            f'<div class="side-sub">{esc(st.session_state.get("role", ""))}</div></div>', unsafe_allow_html=True)
+
+        f = st.file_uploader("Dataset (CSV file)", type=["csv"], key="uploader")
+        sig = None if f is None else (getattr(f, "file_id", None) or (f.name, getattr(f, "size", 0)))
+        if f is not None and sig != st.session_state.get("file_sig"):
+            # A different file was uploaded: old results no longer match it.
+            st.session_state.update(file_sig=sig, analysis=None, upload=None, run_status=None, page=DEFAULT_PAGE)
+        elif f is None and st.session_state.get("file_sig") is not None:
+            st.session_state["file_sig"] = None
+        if st.button("Run Analysis", type="primary", use_container_width=True, key="run_analysis"):
+            run_analysis(f)
+        kind, msg = current_status()
+        st.markdown(f'<div class="status {kind}">{esc(msg)}</div>', unsafe_allow_html=True)
+
+        with st.expander("Supported datasets"):
+            st.markdown(
+                "**A. Academic Records (MTech)** needs at least 3 of: " + ", ".join(MTECH_FEATURE_COLS) +
+                " (numbers only). Optional: Student ID or Roll Number, QUIZ 1 to QUIZ 6.\n\n"
+                "**B. Classroom Engagement (xAPI)** needs at least 3 of: raisedhands, VisITedResources, "
+                "AnnouncementsView, Discussion (numbers); StudentAbsenceDays (Under-7 or Above-7); "
+                "ParentAnsweringSurvey (No or Yes); ParentschoolSatisfaction (Bad or Good). Optional: Class (H, M, L), "
+                "Topic, Semester, GradeID, SectionID.\n\n"
+                f"Column names must match exactly (extra spaces are trimmed). {RECORD_RULE}")
+        if st.button("Log out", key="logout_btn", use_container_width=True):
+            logout()
+            st.rerun()
+
+
+def navbar(allowed):
+    """Horizontal top navigation: one native button per analysis page; the active page is filled."""
+    cur = st.session_state.get("page")
+    with st.container(key="navbar"):
+        cols = st.columns(len(allowed))
+        for i, (col, p) in enumerate(zip(cols, allowed)):
+            col.button(p, key=f"nav_{i}", type="primary" if p == cur else "secondary",
+                       on_click=request_nav, args=(p,))
 
 
 # ----------------------------------------------------------------------------
@@ -807,8 +834,7 @@ def page_validation():
     A, up = get_analysis(), st.session_state.get("upload")
     page_header("Data Validation", "File checks, a preview of the uploaded records, and how values were processed.", A)
     if up is None:
-        callout("note", "<b>No dataset uploaded yet.</b> Upload a CSV and press Run Analysis to see its checks here.")
-        st.button("Go to Upload Dataset", type="primary", on_click=request_nav, args=(PAGE_NAMES[0],), key="val_up")
+        no_data_message()
         return
     if up["error"]:
         callout("err", f"<b>Could not read {esc(up['name'])}.</b> {esc(up['error'])}")
@@ -818,7 +844,7 @@ def page_validation():
     badge = ('<span class="badge b-ok">Passed pipeline requirements</span>' if ok
              else '<span class="badge b-bad">Cannot be analysed</span>')
     schema = SCHEMAS[v["kind"]]["name"] if v["kind"] else "unrecognised columns"
-    st.markdown(f'{badge} &nbsp;<span style="font-size:.8rem;color:{MUTED}">{esc(up["name"])} · recognised as '
+    st.markdown(f'{badge} &nbsp;<span style="font-size:.86rem;color:{MUTED}">{esc(up["name"])} · recognised as '
                 f'{esc(schema)}</span>', unsafe_allow_html=True)
     cells = v["n"] * max(len(v["used"]), 1)
     kpis([
@@ -857,7 +883,7 @@ def page_validation():
         st.button("Continue to Class Overview", type="primary", on_click=request_nav, args=("Class Overview",),
                   key="val_next")
     elif ok:
-        st.caption("Press Run Analysis on the Upload Dataset tab to process this file.")
+        st.caption("Press Run Analysis in the sidebar to process this file.")
 
 
 def trail_table(A):
@@ -886,7 +912,8 @@ def fig_grade_bar(df, title="Grade distribution", h=270):
     fig = px.bar(d, x="Grade", y="Students", color="Grade", color_discrete_map=GRADE_COLORS, text="Students",
                  custom_data=["Share"])
     fig.update_traces(hovertemplate="Grade %{x}<br>%{y} students (%{customdata[0]}%)<extra></extra>",
-                      textposition="outside")
+                      textposition="outside", cliponaxis=False)
+    fig.update_yaxes(range=[0, max(int(d["Students"].max()), 1) * 1.2])
     return style_fig(fig, h, title)
 
 
@@ -1108,19 +1135,19 @@ def page_risk():
         callout("ok", "No students are currently flagged.")
         return
 
-    f1, f2, f3, f4 = st.columns([1.5, 1.2, 1, 1.1])
+    f1, f2, f3 = st.columns([2.2, 1.7, 1.2])
     basis = f1.multiselect("Flag basis", ["At-Risk tier + Grade F", "At-Risk tier only", "Grade F only"],
                            default=["At-Risk tier + Grade F", "At-Risk tier only", "Grade F only"], key="rk_basis")
     tiers = f2.multiselect("Risk tier", TIERS, default=TIERS, key="rk_tier")
     grades = f3.multiselect("Grade", GRADES, default=GRADES, key="rk_grade")
-    search = f4.text_input("Search student ID", key="rk_search", placeholder="Part of an ID")
 
     cols_ind = [c for c in sch["table"] if c in df.columns]
     sort_opts = ["Priority (default)", "Derived score"] + [label(c) for c in cols_ind]
-    s1, s2, s3 = st.columns([1.5, 1.2, 2.1])
+    s0, s1, s2, s3 = st.columns([1.2, 1.4, 1, 2])
+    search = s0.text_input("Search student ID", key="rk_search", placeholder="Part of an ID")
     sort_by = s1.selectbox("Sort by", sort_opts, key="rk_sort")
     asc = s2.selectbox("Order", ["Ascending", "Descending"], key="rk_order") == "Ascending"
-    s3.markdown("<div style='height:1.55rem'></div>", unsafe_allow_html=True)
+    s3.markdown("<div style='height:1.7rem'></div>", unsafe_allow_html=True)
     only_reasons = s3.checkbox("Only students with an indicator below the class lower quartile", key="rk_reason")
 
     view = fl[fl["Flag basis"].isin(basis) & fl["cluster"].isin(tiers) & fl["Grade"].isin(grades)]
@@ -1146,7 +1173,8 @@ def page_risk():
     if show.empty:
         callout("note", "No students match the current filters.")
     else:
-        st.dataframe(style_tier(show.style, ["Risk tier"]), use_container_width=True, hide_index=True, height=370)
+        st.dataframe(style_tier(show.style.format(precision=1), ["Risk tier"]), use_container_width=True,
+                     hide_index=True, height=fit_h(len(show), 370))
     st.caption("Processed values (clipped to the 1st-99th percentile, gaps median-filled). Original uploaded values "
                "are on Student Details.")
     with st.expander("Chart of the filtered students"):
@@ -1179,7 +1207,7 @@ def db_note(d):
 
 
 def metric_card(title, value, note):
-    st.markdown(f'<div class="card" style="border-top:3px solid {AMBER}"><div class="side-label">{esc(title)}</div>'
+    st.markdown(f'<div class="card" style="border-top:3px solid {AMBER};min-height:9.2rem"><div class="side-label">{esc(title)}</div>'
                 f'<div class="kpi-value">{esc(value)}</div><div class="kpi-sub" style="margin-top:.2rem">{esc(note)}'
                 '</div></div>', unsafe_allow_html=True)
 
@@ -1222,7 +1250,8 @@ def page_cluster():
         cd = df["cluster"].value_counts().reindex(TIERS).fillna(0).astype(int).reset_index()
         cd.columns = ["Tier", "Students"]
         fig = px.bar(cd, x="Tier", y="Students", color="Tier", color_discrete_map=TIER_COLORS, text="Students")
-        fig.update_traces(textposition="outside")
+        fig.update_traces(textposition="outside", cliponaxis=False)
+        fig.update_yaxes(range=[0, max(int(cd["Students"].max()), 1) * 1.2])
         plot(style_fig(fig, 320, "Cluster distribution"), "cl_dist")
     with b:
         lab2tier = df.drop_duplicates("kmeans_label").set_index("kmeans_label")["cluster"].to_dict()
@@ -1230,8 +1259,8 @@ def page_cluster():
                           columns=["Tier", "Average normalised score"]).set_index("Tier").reindex(TIERS).reset_index()
         fig = px.bar(sc, x="Tier", y="Average normalised score", color="Tier", color_discrete_map=TIER_COLORS,
                      text=sc["Average normalised score"].round(3))
-        fig.update_traces(textposition="outside")
-        fig.update_layout(yaxis_range=[0, 1])
+        fig.update_traces(textposition="outside", cliponaxis=False)
+        fig.update_layout(yaxis_range=[0, 1.1])
         plot(style_fig(fig, 320, "Ranking score that names the tiers (0-1)"), "cl_rank")
     with c:
         hover = [x for x in [A["id_col"], A["score_col"], "Grade"] if x in df.columns]
@@ -1241,7 +1270,7 @@ def page_cluster():
         fig.update_traces(marker=dict(size=8, line=dict(width=0.5, color="white")))
         plot(style_fig(fig, 320, "Students on a 2D map (PCA)", legend=True), "cl_pca")
 
-    a, b = st.columns([1.2, 1])
+    a, b = st.columns([1, 1.1])
     with a:
         mm = df[A["features"]].copy()
         rng = (mm.max() - mm.min()).replace(0, np.nan)
@@ -1523,7 +1552,7 @@ def page_export():
 # Router
 # ----------------------------------------------------------------------------
 ROUTES = {
-    "Upload Dataset": page_upload, "Data Validation": page_validation, "Class Overview": page_overview,
+    "Data Validation": page_validation, "Class Overview": page_overview,
     "Performance": page_performance, "At-Risk Students": page_risk, "Cluster Analysis": page_cluster,
     "Model Evaluation": page_model, "Indicator Summary": page_indicators, "Student Details": page_student,
     "Export Reports": page_export,
@@ -1563,21 +1592,14 @@ def main():
 
     # Everything below is reachable only after a successful sign-in.
     allowed = allowed_pages()
-    pending = st.session_state.pop("_goto", None)
-    if pending in allowed:
-        st.session_state["nav"] = pending
-    if st.session_state.get("nav") not in allowed:
-        st.session_state["nav"] = allowed[0] if allowed else PAGE_NAMES[0]
-    sidebar()
-    st.radio("Navigation", allowed, horizontal=True, key="nav", label_visibility="collapsed")
-    flash = st.session_state.pop("_flash", None)
-    if flash:
-        st.toast(flash)
-    page = st.session_state["nav"]
-    if page not in allowed:
-        st.error("Your role does not have access to this page.")
+    if st.session_state.get("page") not in allowed:
+        st.session_state["page"] = allowed[0] if allowed else DEFAULT_PAGE
+    sidebar()                      # may start an analysis and change the page
+    if not allowed:
+        st.error("Your role does not have access to any page.")
         return
-    ROUTES[page]()
+    navbar(allowed)
+    ROUTES[st.session_state["page"]]()
 
 
 if __name__ == "__main__":
